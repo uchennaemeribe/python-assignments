@@ -1,0 +1,192 @@
+CREATE SCHEMA prc
+/*CREATE TABLE "SCHEMA_NAME"."TABLE_NAME"(
+	COLUMN_A "DATA_TYPE",
+	COLUMN_B "DATA_TYPE",
+	COLUMN_C "DATA_TYPE",
+	COLUMN_D "DATA_TYPE"
+)
+*/
+
+CREATE TABLE prc.class_reg(
+	SN	INT,
+	first_name VARCHAR(5),
+	last_name VARCHAR(20),
+	Age INT,
+	GENDER VARCHAR(1)
+)
+
+/*SELECT LIST OF, COLUMNS
+FROM table_name 
+*/
+
+SELECT * FROM prc.class_reg /* "*" means select every column */
+
+SELECT SN, age, gender /* to declare selected columns */
+FROM prc.class_reg
+
+-- Inserting record into table name
+/*
+INSERT INTO TABLE_NAME(columns, list, etc)
+VALUES(columns, list, etc)
+*/
+
+INSERT INTO prc.class_reg (sn, first_name, last_name, age, gender)
+VALUES(5, 'Ucheoma', 'Emeribe', '3', 'F')
+
+/*
+ALTER TABLE TABLE_NAME
+
+ALTER COLUMN column_name TYPE VARCHAR(50) this extends the character limit
+*/
+
+ALTER TABLE prc.class_reg
+ALTER COLUMN first_name TYPE VARCHAR(50)
+
+ALTER TABLE prc.class_reg
+ALTER COLUMN last_name TYPE VARCHAR(50)
+
+/* To insert specific column */
+INSERT INTO prc.class_reg (sn, first_name, last_name)
+VALUES(6, 'Chioma', 'Egbo')
+
+/* To insert records without specifying target columns */
+INSERT INTO prc.class_reg
+VALUES(7, 'Chukwuemeka', 'Emeribe', '37', 'M')
+
+/* To insert more records than what the table can handle based on more target columns */
+ALTER TABLE prc.class_reg
+ADD COLUMN employment_status VARCHAR(50)
+
+UPDATE prc.class_reg
+SET gender = 'F' WHERE sn = 6
+
+UPDATE prc.class_reg
+SET age = 35 WHERE first_name = 'Chioma'
+
+/*To change the value of a column for an existing record:
+UPDATE table_name
+SET column_name = new_value
+WHERE condition;
+*/
+
+UPDATE prc.class_reg
+SET sn = 5
+WHERE first_name = 'Chizuruoke'
+
+UPDATE prc.class_reg
+SET sn = 6 
+WHERE first_name = 'Chioma'
+
+UPDATE prc.class_reg
+SET employment_status = 'employed'
+
+INSERT INTO prc.class_reg (sn, first_name, last_name, age, gender, employment_status)
+VALUES(7, 'Onyi', 'Mmegwa', 43, 'F', 'employed')
+
+-- Performing query on a location (filtering query)
+SELECT first_name, last_name, gender
+FROM prc.class_reg
+WHERE last_name = 'Mmegwa' OR first_name = 'Tony'
+
+SELECT first_name, last_name, gender, employment_status
+FROM prc.class_reg
+WHERE employment_status IS NOT NULL
+LIMIT 3
+
+
+SELECT first_name, last_name, gender, employment_status
+FROM prc.class_reg
+ORDER by first_name DESC
+
+SELECT first_name, last_name, gender, employment_status
+FROM prc.class_reg
+ORDER by sn DESC
+
+SELECT first_name, last_name, gender, employment_status, sn
+FROM prc.class_reg
+ORDER by sn ASC
+
+DELETE FROM prc.class_reg
+WHERE sn = 7 
+  AND first_name = 'Onyi'
+  AND last_name = 'Mmegwa'
+  AND employment_status IS NULL;
+
+UPDATE prc.class_reg
+SET employment_status = 'unemployed'
+WHERE first_name = 'Chizuruoke' AND last_name = 'Emeribe'
+
+
+UPDATE prc.class_reg
+SET employment_status = 'employed'
+WHERE first_name = 'Chioma' AND last_name = 'Egbo'
+
+-- SELECTING DISTINCT RECORDS to avoid multiple counting
+SELECT DISTINCT first_name, last_name, gender, employment_status
+FROM prc.class_reg
+WHERE first_name LIKE 'T%' OR last_name LIKE '%e';
+
+-- Insert a new record
+INSERT INTO prc.class_reg (first_name, last_name, age, gender, employment_status)
+VALUES ('Kanye', 'Emeribe', 3, 'M', 'Unemployed');
+
+-- Count all records
+SELECT COUNT(*) 
+FROM prc.class_reg;
+
+-- Count distinct serial numbers (ignores duplicates)
+SELECT COUNT(DISTINCT sn) 
+FROM prc.class_reg;
+
+-- Count non-null serial numbers
+SELECT COUNT(sn) 
+FROM prc.class_reg;
+
+-- Using Aliases
+SELECT DISTINCT first_name AS fn, last_name AS ln, age, gender
+FROM prc.class_reg;
+
+-- SUM with DISTINCT and normal SUM
+SELECT SUM(DISTINCT age) AS sum_distinct_age, 
+       SUM(age) AS total_age
+FROM prc.class_reg;
+
+-- Count distinct serial number (example to count employees whose employment status is unknown)
+SELECT COUNT(DISTINCT sn)
+FROM prc.class_reg
+WHERE employment_status IS NULL;
+
+-- Average age of employees with unknown employment status
+SELECT AVG(DISTINCT age) AS avg_distinct_age
+FROM prc.class_reg
+WHERE employment_status IS NULL;
+
+-- Update record example
+UPDATE prc.class_reg
+SET sn = 8 
+WHERE first_name = 'Amaka';
+
+UPDATE prc.class_reg
+SET sn = 7
+WHERE first_name = 'Kanye';
+
+-- Select all distinct records where age < 40
+SELECT DISTINCT * 
+FROM prc.class_reg 
+WHERE age < 40;
+
+-- AVERAGE AGE of Male and Female employees
+SELECT gender, AVG(age) AS avg_age
+FROM prc.class_reg
+GROUP BY gender;
+
+-- COUNT of Male and Female employees
+SELECT gender, COUNT(*) AS employee_count
+FROM prc.class_reg
+GROUP BY gender;
+
+-- SUM of Ages for Male and Female employees
+SELECT gender, SUM(age) AS sum_age
+FROM prc.class_reg
+GROUP BY gender;
+-- 'Drop' removes the table completely; 'truncate' removes the entire table entries but leaves the column and row names intact; and 'delect' removes on selected entries
