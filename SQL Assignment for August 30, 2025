@@ -1,0 +1,196 @@
+/* SQL Assignment for August 30, 2025
+This workflow includes:
+	•	Creating a table
+	•	Inserting 20 rows
+	•	Extending the TABLE to include additional column fields
+	•	Inserting/Updating data entries
+	•	Deleting records from the table
+	•	Performing aggregate queries (AVG, COUNT, SUM, MIN, MAX, GROUP BY)
+*/
+
+--Task 1: Creating a new table named (prc.employee_reg) with basic fields
+
+CREATE TABLE prc.employee_reg (
+    emp_id SERIAL PRIMARY KEY,      -- serial number
+    first_name VARCHAR(50),
+    last_name VARCHAR(50),
+    age INT,
+    gender CHAR(1),
+    employment_status VARCHAR(20)
+);
+
+SELECT * FROM prc.employee_reg /* "*" means select every column */
+
+--Task 2: Inserting 20 data entries
+INSERT INTO prc.employee_reg (first_name, last_name, age, gender, employment_status)
+VALUES
+('Tony', 'Emeribe', 38, 'M', 'employed'),
+('Helen', 'Emeribe', 38, 'F', 'employed'),
+('Chukwuemeka', 'Emeribe', 37, 'M', 'employed'),
+('Ucheoma', 'Emeribe', 3, 'F', 'unemployed'),
+('Chizuruoke', 'Emeribe', 8, 'F', 'student'),
+('Chioma', 'Egbo', 35, 'F', 'employed'),
+('Onyi', 'Mmegwa', 43, 'F', 'employed'),
+('John', 'Doe', 30, 'M', 'employed'),
+('Jane', 'Smith', 28, 'F', 'employed'),
+('Mike', 'Johnson', 40, 'M', 'employed'),
+('Sophia', 'Brown', 26, 'F', 'employed'),
+('Emeka', 'Okoro', 45, 'M', 'employed'),
+('Ada', 'Obi', 32, 'F', 'employed'),
+('Victor', 'Okechukwu', 50, 'M', 'retired'),
+('Ngozi', 'Eze', 29, 'F', 'employed'),
+('Samuel', 'Akin', 41, 'M', 'employed'),
+('Grace', 'Olu', 36, 'F', 'employed'),
+('Peter', 'Ibe', 27, 'M', 'employed'),
+('Rita', 'Udo', 33, 'F', 'employed'),
+('David', 'Umeh', 39, 'M', 'employed');
+
+--Filter Queries
+SELECT first_name, last_name, gender, employment_status --sorting by serial number
+FROM prc.employee_reg
+ORDER by emp_id;
+
+SELECT emp_id AS serial_number, first_name, last_name, gender, employment_status --to see the serial number (emp_id) in the output too, the emp_id will be included in the SELECT
+FROM prc.employee_reg
+ORDER BY emp_id;
+
+--Task 3: Extending the table with new employment-related fields by adding department, salary, hire_date, and manager_id
+ALTER TABLE prc.employee_reg
+ADD COLUMN department VARCHAR(100),
+ADD COLUMN salary NUMERIC(12,2),
+ADD COLUMN hire_date DATE,
+ADD COLUMN manager_id INT;
+
+/* The part NUMERIC(12,2) means:
+	•	12 → the total number of digits that can be stored (also called precision).
+	•	2 → the number of digits to the right of the decimal point (also called scale).
+
+So, NUMERIC(12,2) can store numbers with up to 12 digits in total, of which 2 are after the decimal point.
+
+That means:
+	•	Maximum value: 9999999999.99 (10 digits before the decimal, 2 after)
+	•	Minimum value: -9999999999.99 (if negatives are allowed)
+	•	Example valid values: 123456.78, 42.00, 9999999999.99
+*/
+
+--Task 4: Updating records with new values by assigning departments and salaries
+UPDATE prc.employee_reg
+SET department = 'Operations', salary = 55000, hire_date = '2021-01-12', manager_id = 4
+WHERE first_name = 'Tony';
+
+UPDATE prc.employee_reg
+SET department = 'HR', salary = 48000, hire_date = '2020-05-10', manager_id = 1
+WHERE first_name = 'Helen';
+
+UPDATE prc.employee_reg
+SET department = 'Marketing', salary = 48000, hire_date = '2020-06-18', manager_id = 5
+WHERE first_name = 'Chukwuemeka';
+
+UPDATE prc.employee_reg
+SET department = 'Support', salary = 35000, hire_date = '2022-02-01', manager_id = 6
+WHERE first_name = 'Chioma';
+
+UPDATE prc.employee_reg
+SET department = 'Legal', salary = 62000, hire_date = '2017-09-05', manager_id = 7
+WHERE first_name = 'Onyi';
+
+UPDATE prc.employee_reg
+SET department = 'IT', salary = 60000, hire_date = '2019-03-15', manager_id = 2
+WHERE first_name = 'John';
+
+UPDATE prc.employee_reg
+SET department = 'Human Resources', salary = 52000, hire_date = '2021-04-21', manager_id = 17
+WHERE first_name = 'Jane';
+
+UPDATE prc.employee_reg
+SET department = 'Finance', salary = 75000, hire_date = '2018-11-20', manager_id = 3
+WHERE first_name = 'Mike';
+
+UPDATE prc.employee_reg
+SET department = 'Sales', salary = 45000, hire_date = '2021-07-23', manager_id = 8
+WHERE first_name = 'Sophia';
+
+UPDATE prc.employee_reg
+SET department = 'Management', salary = 80000, hire_date = '2010-04-10', manager_id = 9
+WHERE first_name = 'Emeka';
+
+UPDATE prc.employee_reg
+SET department = 'Admin', salary = 42000, hire_date = '2022-03-16', manager_id = 10
+WHERE first_name = 'Ada';
+
+UPDATE prc.employee_reg
+SET department = 'Retired', salary = 0, hire_date = '2000-01-01', manager_id = 18
+WHERE first_name = 'Victor';
+
+UPDATE prc.employee_reg
+SET department = 'Design', salary = 47000, hire_date = '2020-09-09', manager_id = 11
+WHERE first_name = 'Ngozi';
+
+UPDATE prc.employee_reg
+SET department = 'Engineering', salary = 70000, hire_date = '2015-05-22', manager_id = 12
+WHERE first_name = 'Samuel';
+
+UPDATE prc.employee_reg
+SET department = 'Procurement', salary = 53000, hire_date = '2019-11-14', manager_id = 13
+WHERE first_name = 'Grace';
+
+UPDATE prc.employee_reg
+SET department = 'Logistics', salary = 46000, hire_date = '2021-08-30', manager_id = 14
+WHERE first_name = 'Peter';
+
+UPDATE prc.employee_reg
+SET department = 'Customer Service', salary = 44000, hire_date = '2022-05-19', manager_id = 15
+WHERE first_name = 'Rita';
+
+UPDATE prc.employee_reg
+SET department = 'Research', salary = 69000, hire_date = '2016-12-02', manager_id = 16
+WHERE first_name = 'David';
+
+--Task 5: Deleting an employee record
+DELETE FROM prc.employee_reg
+WHERE first_name = 'Ucheoma';
+
+DELETE FROM prc.employee_reg
+WHERE first_name = 'Chizuruoke';
+
+--Task 6: Aggregate Functions
+
+--Average Age by Gender
+SELECT gender, AVG(age) AS avg_age
+FROM prc.employee_reg
+GROUP BY gender;
+
+--Count of Employees by Gender
+SELECT gender, COUNT(*) AS employee_count
+FROM prc.employee_reg
+
+--Sum of Ages by Gender
+SELECT gender, SUM(age) AS total_age
+FROM prc.employee_reg
+GROUP BY gender;
+GROUP BY gender;
+
+-- Minimum and Maximum Salary
+SELECT MIN(salary) AS min_salary, MAX(salary) AS max_salary
+FROM prc.employee_reg
+WHERE salary IS NOT NULL;
+
+SELECT first_name, last_name,
+       TO_CHAR(salary, '"$"FM999,999,999.00') AS salary_with_dollar
+FROM prc.employee_reg;
+
+-- Average Salary by Department
+SELECT department, AVG(salary) AS avg_salary
+FROM prc.employee_reg
+WHERE department IS NOT NULL
+GROUP BY department;
+
+--Count Employees per Manager
+SELECT manager_id, COUNT(*) AS employees_under_manager
+FROM prc.employee_reg
+GROUP BY manager_id;
+
+--Group by Department + Gender
+SELECT department, gender, COUNT(*) AS count_emp, AVG(salary) AS avg_salary
+FROM prc.employee_reg
+GROUP BY department, gender;
