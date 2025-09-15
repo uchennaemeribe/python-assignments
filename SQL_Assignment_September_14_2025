@@ -1,0 +1,136 @@
+/* Assignment
+Identify the top 3 customers by country based on purchase using the employee table */
+
+--A. Using Windows Function showing Row Number
+WITH customer_totals AS (
+    SELECT 
+        c.customer_id,
+        c.company_name,
+        c.country,
+        SUM(od.unit_price * od.quantity * (1 - od.discount)) AS total_purchase
+    FROM customers c
+    JOIN orders o USING (customer_id)
+    JOIN order_details od USING (order_id)
+    JOIN employees e USING (employee_id)  -- including employees as requested
+    GROUP BY c.customer_id, c.company_name, c.country
+),
+ranked_customers AS (
+    SELECT 
+        customer_id,
+        company_name,
+        country,
+        total_purchase,
+        ROW_NUMBER() OVER (PARTITION BY country ORDER BY total_purchase DESC) AS row_num
+    FROM customer_totals
+)
+SELECT 
+    country,
+    customer_id,
+    company_name,
+    total_purchase,
+    row_num
+FROM ranked_customers
+WHERE row_num <= 3  --top 3 per country
+ORDER BY country, row_num, total_purchase DESC;
+
+--B. Using Windows Function showing RANK
+WITH customer_totals AS (
+    SELECT 
+        c.customer_id,
+        c.company_name,
+        c.country,
+        SUM(od.unit_price * od.quantity * (1 - od.discount)) AS total_purchase
+    FROM customers c
+    JOIN orders o USING (customer_id)
+    JOIN order_details od USING (order_id)
+    JOIN employees e USING (employee_id)  -- including employees as requested
+    GROUP BY c.customer_id, c.company_name, c.country
+),
+ranked_customers AS (
+    SELECT 
+        customer_id,
+        company_name,
+        country,
+        total_purchase,
+		RANK() OVER (PARTITION BY country ORDER BY total_purchase DESC) AS purchase_rank_n
+	FROM customer_totals
+)
+SELECT
+	country,
+    customer_id,
+    company_name,
+    total_purchase,
+    purchase_rank_n
+FROM ranked_customers
+WHERE purchase_rank_n <= 3  --top 3 per country
+ORDER BY country, purchase_rank_n, total_purchase DESC;
+
+--C. Using Windows Function showing DENSE RANK
+WITH customer_totals AS (
+    SELECT 
+        c.customer_id,
+        c.company_name,
+        c.country,
+        SUM(od.unit_price * od.quantity * (1 - od.discount)) AS total_purchase
+    FROM customers c
+    JOIN orders o USING (customer_id)
+    JOIN order_details od USING (order_id)
+    JOIN employees e USING (employee_id)  -- including employees as requested
+    GROUP BY c.customer_id, c.company_name, c.country
+),
+ranked_customers AS (
+    SELECT 
+        customer_id,
+        company_name,
+        country,
+        total_purchase,
+		DENSE_RANK() OVER (PARTITION BY country ORDER BY total_purchase DESC) AS dense_rank_n
+	FROM customer_totals
+)
+SELECT
+	country,
+    customer_id,
+    company_name,
+    total_purchase,
+    dense_rank_n
+FROM ranked_customers
+WHERE dense_rank_n <= 3  --top 3 per country
+ORDER BY country, dense_rank_n, total_purchase DESC;
+
+--D. Using Windows Function showing Row Number, Rank and Dense Rank
+SELECT * FROM public.customers limit 1
+
+WITH customer_totals AS (
+    SELECT 
+        c.customer_id,
+        c.company_name,
+        c.country,
+        SUM(od.unit_price * od.quantity * (1 - od.discount)) AS total_purchase
+    FROM customers c
+    JOIN orders o USING (customer_id)
+    JOIN order_details od USING (order_id)
+    JOIN employees e USING (employee_id)  -- include employee table as requested
+    GROUP BY c.customer_id, c.company_name, c.country
+),
+ranked_customers AS (
+    SELECT 
+        customer_id,
+        company_name,
+        country,
+        total_purchase,
+        ROW_NUMBER() OVER (PARTITION BY country ORDER BY total_purchase DESC) AS row_num,
+        RANK() OVER (PARTITION BY country ORDER BY total_purchase DESC) AS rank_n,
+        DENSE_RANK() OVER (PARTITION BY country ORDER BY total_purchase DESC) AS dense_rank_n
+    FROM customer_totals
+)
+SELECT 
+    country,
+    customer_id,
+    company_name,
+    total_purchase,
+    row_num,
+    rank_n,
+    dense_rank_n
+FROM ranked_customers
+WHERE row_num <= 3  -- top 3 per country
+ORDER BY country, total_purchase DESC;
